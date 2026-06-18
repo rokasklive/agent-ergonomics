@@ -1,0 +1,90 @@
+{
+  "skill_name": "evaluation-harness-designer",
+  "notes": "Six audit/design scenarios drawn from Section 11 of the evaluation-harnesses skill-input brief. Each probes one core decision the skill must get right. Prompts are written as a real practitioner would phrase them. Assertions are objectively checkable from the agent's output text. Baseline configuration for a NEW skill is no-skill (without_skill).",
+  "evals": [
+    {
+      "id": 0,
+      "name": "passk-vs-passatk-production-reliability",
+      "prompt": "I'm designing evaluation for a production customer-support agent that handles billing disputes. It can issue refunds and adjust charges, so getting it wrong has real consequences for customers. The system has to be reliable before we deploy it to real customers next month. What reliability metric should I use, and how should I set it up?",
+      "expected_output": "The agent selects Pass^k (all-k-must-pass) and explicitly justifies it on the grounds that a production/safety-critical billing agent requires consistency across all attempts because a single wrong resolution is user harm. It explains that Pass@k measures best-of-k (luck/capability ceiling), not reliability, and must not be used for production readiness. It specifies a k value and documents what the metric reveals and what it hides.",
+      "files": [],
+      "expectations": [
+        "Selects Pass^k (all-k-must-pass) as the reliability metric, not Pass@k.",
+        "Explicitly justifies the choice by the production/safety-critical context — a single failure among attempts matters because it causes user harm / inconsistency is failure.",
+        "Explains that Pass@k measures best-of-k (luck or capability ceiling) rather than per-attempt reliability, and warns it must not be used to judge production readiness.",
+        "Specifies a concrete k value and documents what the chosen metric reveals and what it hides (its limitations).",
+        "Does NOT recommend Pass@k for this production case on grounds like 'it's the industry standard' or 'most benchmarks use it'."
+      ]
+    },
+    {
+      "id": 1,
+      "name": "same-family-judge-rejection",
+      "prompt": "We're using Claude as our agent model. To keep things simple we'd like to use Claude as the LLM-as-judge too, since we already have the API access and the prompts wired up. Can you help me set up the evaluation harness with that judge configuration?",
+      "expected_output": "The agent rejects the same-family judge configuration, citing the different-family constraint. It explains that a same-family judge inflates scores (~12-18%) because judge and judged share biases and training distribution, making the evaluation self-referential. It recommends a judge from a different model family, and if same-family is the only option, it flags all evaluations as provisional and documents the expected inflation rather than accepting the setup as valid.",
+      "files": [],
+      "expectations": [
+        "Rejects / declines to set up the same-family (Claude judging Claude) judge configuration as a valid evaluation design.",
+        "Invokes the different-family constraint and explains the mechanism: shared biases / training distribution make the evaluation self-referential.",
+        "States that same-family judging inflates scores, ideally citing the ~12-18% figure.",
+        "Recommends using a different model family for the judge.",
+        "States that if same-family is genuinely the only option, all evaluations must be flagged provisional with the expected inflation documented — does NOT simply accept the configuration because 'Claude is capable' or 'calibration will catch it'."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "outcome-only-dashboard-flagging",
+      "prompt": "Our monitoring dashboard shows a 96% success rate for our multi-agent research system (a planner agent plus several worker agents that pass findings back and forth). The team is really happy with it. Can you validate that our evaluation setup is solid?",
+      "expected_output": "The agent does not accept the 96% at face value. It asks whether the metric is outcome-only or trajectory-based, whether contamination has been measured, and what fraction of trajectories are sampled for quality. It flags outcome-only evaluation as structurally insufficient for a multi-agent system, explains that a large share of contamination (~55.6%) can be invisible to outcome-only metrics, and calls for trajectory sampling and contamination monitoring before validating.",
+      "files": [],
+      "expectations": [
+        "Does NOT accept the 96% success figure at face value as evidence the evaluation is solid.",
+        "Asks clarifying questions about whether the metric is outcome-only vs trajectory-based, whether contamination has been measured, and/or the trajectory sampling rate.",
+        "Flags outcome-only evaluation as structurally insufficient for a multi-agent system (one with agent-to-agent boundaries).",
+        "Explains that contamination (a large share, ~55.6%) can be invisible to outcome-only metrics because it produces correct-looking outcomes through incorrect reasoning.",
+        "Recommends adding trajectory-level analysis (e.g. >=20% sampling) and contamination monitoring before validating the setup."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "contamination-detection-sensitivity",
+      "prompt": "We ran a test: we injected 50 agent trajectories with known contamination (a mix of semantic drift, behavioral detours, and combined disruption). Our contamination monitoring caught 28 of the 50, so about 56%. The team thinks that's a decent result for a first version. Is 56% adequate?",
+      "expected_output": "The agent identifies 56% detection as inadequate because it falls below the ~70% sensitivity threshold, meaning roughly 44% of contamination is leaking into 'clean' classifications. It diagnoses likely causes — trajectory sampling rate too low, detection instrumentation incomplete for one or more contamination types, or thresholds set too conservatively — and recommends improving detection and retesting rather than accepting the number.",
+      "files": [],
+      "expectations": [
+        "Judges 56% detection as inadequate / insufficient, not 'good enough for a first version'.",
+        "References a sensitivity threshold around 70% that the result falls below.",
+        "Quantifies the leak — roughly 44% of contamination is being misclassified as clean / missed.",
+        "Diagnoses plausible causes (e.g. trajectory sampling rate too low, incomplete per-type detection instrumentation, or overly conservative thresholds).",
+        "Recommends concrete remediation (increase sampling, improve per-type detection) and retesting, rather than accepting 56% as 'better than nothing'."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "cost-per-call-misalignment",
+      "prompt": "Good news from our optimization team: our cost-per-call has dropped three months running, from $0.08 to $0.06 to $0.05. Everyone's pretty excited. Should we report this as a cost-efficiency win?",
+      "expected_output": "The agent declines to celebrate the cost-per-call decline on its own. It explains that a falling cost-per-call can mask a rising cost-per-successful-task if calls/retries are being cut at the expense of task success. It asks for cost-per-successful-task, idle time, and token distribution data before validating, and frames cost-per-successful-task (including retries, idle time, coordination overhead) as the metric that actually matters — optionally illustrating with the kind of figure where a low per-call cost hides a much higher per-successful-task cost.",
+      "files": [],
+      "expectations": [
+        "Declines to endorse the cost-per-call decline as a cost-efficiency win on its own / without more data.",
+        "Explains that falling cost-per-call can mask a rising cost-per-successful-task, e.g. when retries or calls are cut at the expense of task success.",
+        "Requests cost-per-successful-task data (and ideally idle time and/or token distribution) before validating the claim.",
+        "Identifies cost-per-successful-task — including retries, idle time, and coordination overhead — as the primary economic metric and relegates cost-per-call to anomaly detection.",
+        "Does NOT accept declining per-call cost as sufficient evidence of cost efficiency."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "scale-test-before-deployment",
+      "prompt": "Our 3-agent system passes all of our evaluation criteria at current scale and the harness is green across every metric. We're planning to expand to about 15 agents next quarter. Since everything's green today, can we go ahead and scale up?",
+      "expected_output": "The agent flags that no compounding-friction scale test has been performed, so current-scale green metrics do not predict 15-agent behavior because degradation is known to be non-linear. It designs a scale test at multiple points (e.g. 6 / 15 / 30 agents, or 2x/5x/10x) measuring degradation slopes for success rate, contamination, cost, and latency, and requires that no metric degrade super-linearly at or below the 15-agent target before scale-up is approved.",
+      "files": [],
+      "expectations": [
+        "Flags that no compounding-friction / scale test has been run and that current-scale metrics do not predict behavior at 15 agents.",
+        "Explains that degradation with added components is non-linear (compounding friction), so green-at-current-scale is not evidence the larger system will hold.",
+        "Designs a scale test at multiple component counts (e.g. 2x/5x/10x or roughly 6/15/30 agents) bracketing the planned 15-agent target.",
+        "Specifies measuring degradation across multiple dimensions — at least success rate, contamination, cost, and latency — via degradation slopes.",
+        "Requires a gate: no super-linear degradation at or below the planned scale before approving the scale-up, rather than accepting current-scale metrics as sufficient."
+      ]
+    }
+  ]
+}

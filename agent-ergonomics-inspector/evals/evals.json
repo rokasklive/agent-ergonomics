@@ -1,0 +1,80 @@
+{
+  "skill_name": "agent-ergonomics-inspector",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I maintain `opengrok-go-mcp`, an MCP server written in Go that exposes OpenGrok code search to AI agents (code/symbol/file search, symbol lookup, file reads, project listing, and so on). I'm getting close to a 1.0 release and I want a proper, critical review of how well an AI agent can actually *operate* these tools \u2014 not a code-quality review, but whether the tools, their inputs/outputs, and their docs make the server effective and efficient for an agent to use in practice. The repo is at /home/moritz/Development/opengrok-go-mcp. Please give me a thorough assessment with concrete findings, severities, and priorities.",
+      "expected_output": "A structured agent-ergonomics review report following the skill's format (Executive Summary, Ergonomics Scorecard over the 5 domains, Key Findings with severity/root cause/related law/fix, Architectural Risks, Quick Wins, Strategic Improvements, Final Assessment), grounded in the actual opengrok-go-mcp repo and explaining friction via the five laws.",
+      "files": [],
+      "expectations": [
+        "The review includes an explicit ergonomics scorecard that rates all FIVE agent-ergonomics domains (Tool & Interface Design, Information Architecture, Workflow & Coordination, Economic Design, Evaluation & Measurement), each on a 1-10 scale.",
+        "At least two findings are explicitly attributed to one or more of the five named laws (Bounded Attention, Interface Ground Truth, Boundary Entropy, Compounding Friction, Ergonomic Dominance) AND use the law as a causal mechanism (explaining WHY the harm occurs), not merely name-dropping it.",
+        "Findings are individually structured with at least a severity rating, a root cause, and a concrete recommended fix.",
+        "Findings cite concrete evidence from the actual repo (e.g. specific tools, fields, or behaviors such as the warning field, truncated/total_hits, next_cursor, citation.url, list_symbols page-local kind filtering, allow_all_projects) rather than only generic advice.",
+        "The review stays agent-centric \u2014 it assesses how an AI agent operates the tools/outputs \u2014 and does not devolve into a generic human-oriented code-quality or style review.",
+        "A final assessment explicitly names the single biggest ergonomic weakness AND the highest-ROI / highest-leverage change to make.",
+        "The recommendations are prioritized \u2014 there is a clear separation between low-effort quick wins and larger strategic/architectural improvements."
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "ok so agents keep tripping over my opengrok mcp server \u2014 they grab the wrong search tool, and some of the responses seem to blow up the context window fast. i wanna understand whats actually going wrong from the agent's point of view and what i should fix first. code is at ~/Development/opengrok-go-mcp (its a go mcp server wrapping opengrok code search). can you dig in?",
+      "expected_output": "A structured agent-ergonomics review report following the skill's format (Executive Summary, Ergonomics Scorecard over the 5 domains, Key Findings with severity/root cause/related law/fix, Architectural Risks, Quick Wins, Strategic Improvements, Final Assessment), grounded in the actual opengrok-go-mcp repo and explaining friction via the five laws.",
+      "files": [],
+      "expectations": [
+        "The review includes an explicit ergonomics scorecard that rates all FIVE agent-ergonomics domains (Tool & Interface Design, Information Architecture, Workflow & Coordination, Economic Design, Evaluation & Measurement), each on a 1-10 scale.",
+        "At least two findings are explicitly attributed to one or more of the five named laws (Bounded Attention, Interface Ground Truth, Boundary Entropy, Compounding Friction, Ergonomic Dominance) AND use the law as a causal mechanism (explaining WHY the harm occurs), not merely name-dropping it.",
+        "Findings are individually structured with at least a severity rating, a root cause, and a concrete recommended fix.",
+        "Findings cite concrete evidence from the actual repo (e.g. specific tools, fields, or behaviors such as the warning field, truncated/total_hits, next_cursor, citation.url, list_symbols page-local kind filtering, allow_all_projects) rather than only generic advice.",
+        "The review stays agent-centric \u2014 it assesses how an AI agent operates the tools/outputs \u2014 and does not devolve into a generic human-oriented code-quality or style review.",
+        "A final assessment explicitly names the single biggest ergonomic weakness AND the highest-ROI / highest-leverage change to make.",
+        "The review directly addresses BOTH reported symptoms: (a) agents choosing the wrong search tool \u2014 root-caused to tool discoverability/overlap/description issues \u2014 and (b) responses blowing up the context window \u2014 root-caused to output verbosity / token cost \u2014 and ties each to the relevant law.",
+        "The response prioritizes what to fix first, as the user explicitly asked."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can you audit `opengrok-go-mcp` specifically for two things: (a) the token / context efficiency of its tool outputs and pagination, and (b) whether an agent can reliably tell what happened from a response \u2014 errors, truncation, empty results, and warnings. Repo: /home/moritz/Development/opengrok-go-mcp. I care most about context cost and output legibility; give me prioritized, concrete fixes.",
+      "expected_output": "A structured agent-ergonomics review report following the skill's format (Executive Summary, Ergonomics Scorecard over the 5 domains, Key Findings with severity/root cause/related law/fix, Architectural Risks, Quick Wins, Strategic Improvements, Final Assessment), grounded in the actual opengrok-go-mcp repo and explaining friction via the five laws.",
+      "files": [],
+      "expectations": [
+        "The review includes an explicit ergonomics scorecard that rates all FIVE agent-ergonomics domains (Tool & Interface Design, Information Architecture, Workflow & Coordination, Economic Design, Evaluation & Measurement), each on a 1-10 scale.",
+        "At least two findings are explicitly attributed to one or more of the five named laws (Bounded Attention, Interface Ground Truth, Boundary Entropy, Compounding Friction, Ergonomic Dominance) AND use the law as a causal mechanism (explaining WHY the harm occurs), not merely name-dropping it.",
+        "Findings are individually structured with at least a severity rating, a root cause, and a concrete recommended fix.",
+        "Findings cite concrete evidence from the actual repo (e.g. specific tools, fields, or behaviors such as the warning field, truncated/total_hits, next_cursor, citation.url, list_symbols page-local kind filtering, allow_all_projects) rather than only generic advice.",
+        "The review stays agent-centric \u2014 it assesses how an AI agent operates the tools/outputs \u2014 and does not devolve into a generic human-oriented code-quality or style review.",
+        "A final assessment explicitly names the single biggest ergonomic weakness AND the highest-ROI / highest-leverage change to make.",
+        "The audit substantively evaluates output token efficiency (e.g. verbose vs minimal fields, serialization, pagination by tokens vs records) AND output legibility for the distinct states the user named \u2014 errors, truncation, empty results, warnings \u2014 grounded in the repo's actual response contract fields."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Give me a quick, cursory agent ergonomics review of opengrok-go-mcp \u2014 I just want the top issues and what to fix first, not a full write-up. Repo: /home/moritz/Development/opengrok-go-mcp (a Go MCP server wrapping OpenGrok code search).",
+      "expected_output": "A Cursory Review: a short summary, a condensed five-domain scorecard, the top 3\u20135 findings in compact one-line form, the single biggest risk, and the highest-ROI fix \u2014 grounded in the actual opengrok-go-mcp repo and using the same laws and domains as a Full Review, but deliberately shorter and without the full Key Findings / Architectural Risks / Quick Wins / Strategic Improvements sections.",
+      "files": [],
+      "expectations": [
+        "The output is a Cursory Review: a condensed report (short summary, condensed scorecard, top 3\u20135 findings, biggest risk, highest-ROI fix) that is clearly shorter than the Full Review format and does NOT emit the full per-finding blocks plus separate Architectural Risks, Quick Wins, and Strategic Improvements sections.",
+        "The condensed scorecard still covers all five domains (each scored 1\u201310, or explicitly marked unseen with a brief reason).",
+        "The findings are limited to roughly 3\u20135 and each is a compact line that still names a root cause or law in brief, rather than a full finding block.",
+        "It explicitly names the single biggest risk AND the highest-ROI / highest-leverage fix.",
+        "Findings cite concrete evidence from the actual repo (specific tools, fields, or behaviors such as the warning field, truncated/total_hits, next_cursor, citation.url, list_symbols page-local kind filtering, allow_all_projects) rather than only generic advice.",
+        "The review stays agent-centric and does not devolve into a generic human-oriented code-quality or style review."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Run a review board assessment on opengrok-go-mcp \u2014 I want a high-confidence, adversarial review that challenges its own findings and tells me which ones actually hold up before I act on them. Repo: /home/moritz/Development/opengrok-go-mcp (a Go MCP server wrapping OpenGrok code search).",
+      "expected_output": "A Review Board report: a primary Full Review, an adversarial critique that challenges the review itself, and an evidence arbiter's final arbitration classifying each finding as Confirmed / Partially Confirmed / Rejected / Uncertain \u2014 reusing the same five laws, five domains, and scorecard as a Full Review, with each arbitrated finding recording its original severity, the adversarial position, and the final status.",
+      "files": [],
+      "expectations": [
+        "The output follows the Review Board structure: Executive Summary, Ergonomics Scorecard, Primary Findings, Adversarial Challenges, Arbitration Results, Architectural Risks, Quick Wins, Strategic Improvements, Final Assessment.",
+        "It includes a distinct adversarial layer that critiques the review itself (challenging weak evidence, overclaims, inflated severity, law misuse, ignored tradeoffs, or unjustified recommendations) rather than independently re-reviewing the target from scratch.",
+        "It includes an arbitration layer that classifies findings as Confirmed / Partially Confirmed / Rejected / Uncertain and is allowed to upgrade or downgrade severity and to elevate or introduce findings.",
+        "For each arbitrated finding it records the original severity, the adversarial position, and the final status (and, where it changed, the final severity).",
+        "It still rates all FIVE domains on the 1\u201310 scorecard and uses the five named laws as causal mechanisms \u2014 i.e. it reuses the existing framework rather than inventing a separate scoring methodology.",
+        "Findings cite concrete evidence from the actual repo (specific tools, fields, or behaviors such as the warning field, truncated/total_hits, next_cursor, citation.url, list_symbols page-local kind filtering, allow_all_projects) rather than only generic advice.",
+        "The final assessment names the single biggest ergonomic weakness AND the highest-ROI / highest-leverage change, reflecting the arbitrated (post-challenge) verdict rather than the primary review's unchallenged claims."
+      ]
+    }
+  ]
+}

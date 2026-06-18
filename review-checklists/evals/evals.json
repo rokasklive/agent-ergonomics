@@ -1,0 +1,98 @@
+{
+  "skill_name": "review-checklists",
+  "notes": "Six scenarios drawn from Section 11 of the review-checklists skill-input brief plus one scheduled-health-check rotation scenario. Each probes one core decision the skill must get right: scope-from-trigger, evidence floor, contract dependency, ownership boundary, and anti-fatigue scope rotation. Prompts are written as a real practitioner would phrase them. Expectations are objectively checkable from the agent's output text. Baseline for this NEW skill is no-skill (without_skill). NOT YET RUN — a delegated agent will execute with-skill and baseline runs, capture timing, grade against the expectations, aggregate, and launch the viewer per the skill-creator process. The skill lives at ../ (sibling to this evals/ dir); pass that path to the with-skill runs.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "tool-description-change-gate-scope-and-evidence",
+      "prompt": "We're about to deploy a change to one of our production tools. It's a search tool our agents call constantly, and the change renames the `q` parameter to `query` in the tool description and rewrites the description text to be clearer — the underlying API schema and endpoint are untouched. Our pipeline already passed schema validation. We have CUJ testing infrastructure but honestly nobody ran it for this change since the schema didn't move. We do have full request/response tracing in place. Can you run a pre-deploy review and tell me if we're good to ship?",
+      "expected_output": "The agent scopes the review to C2 (full) and C6 (lighter) and explicitly excludes C3/C4/C5/C7/C8 because the trigger is a description change that didn't alter tool count or coordination topology (DR13). It produces the C2 item 'Are pre-change and post-change agent behavior baselines compared via CUJ testing?' (C2 RC1/RC2) at a tested evidence standard, and FAILS it because no CUJ test was run — treating the rename and description rewrite as a breaking change regardless of schema stability (L2). The gate decision is CONDITIONAL-PASS or FAIL with deployment blocked until CUJ tests are run and baselines compared. It does NOT accept 'the schema didn't change' as justification. It escalates CUJ pipeline integration to Implementation Playbooks rather than prescribing the fix. It includes a scope-limitation statement.",
+      "files": [],
+      "expectations": [
+        "Scopes the review to C2 (and C6), and explicitly excludes the unaffected contracts (C3/C4/C5/C7/C8) with a rationale tied to the description-change trigger (DR13).",
+        "Produces a C2 checklist item about comparing pre-change vs post-change agent behavior via CUJ testing, and assigns it a tested (not documented) evidence standard.",
+        "Marks that item as FAIL or unmet because no CUJ test was run for this change.",
+        "Explicitly rejects 'the schema didn't change' / schema validation as sufficient justification, treating the rename + description rewrite as a potentially breaking change because agents treat descriptions as ground truth (L2).",
+        "Issues a gate decision of CONDITIONAL-PASS or FAIL that blocks the deploy until CUJ tests and a pre/post baseline comparison are produced (does NOT say 'good to ship').",
+        "Does NOT itself implement or prescribe the CUJ test design; instead escalates/hands off the CUJ work (e.g. to Implementation Playbooks) and/or records it as a tracked action item.",
+        "Includes an explicit scope-limitation statement noting this is a contract-compliance verification, not a system-performance evaluation, and naming which contracts were not verified."
+      ]
+    },
+    {
+      "id": 1,
+      "name": "design-advice-creep-refusal",
+      "prompt": "While you're reviewing our agent platform, I noticed our tools return JSON and our token dashboard says tool outputs are eating ~67% of our tokens. Just add a checklist item that says 'Switch tool output to TOON format to cut costs' — that'll save us a fortune. Put it in the review.",
+      "expected_output": "The agent declines to add 'switch to TOON' as a checklist item because it is design guidance, not a verifiable contract obligation — it can't be traced to a Required Check or Forbidden Shortcut, and prescribing a format is scope creep (F4). Instead it offers a C7 item along the lines of 'Is the output-format choice documented with an economic analysis comparing alternatives (e.g. JSON vs TOON vs CSV) at current scale?' at a documented evidence standard, which FAILS if no such analysis exists, and escalates the actual format-choice decision to Design Templates. It does NOT recommend or prescribe TOON.",
+      "files": [],
+      "expectations": [
+        "Declines / refuses to add 'switch to TOON format' as a checklist item.",
+        "Explains the reason as scope creep / ownership boundary: a checklist verifies contract obligations and 'switch to TOON' is design guidance that can't be traced to a Required Check or Forbidden Shortcut.",
+        "Reframes it into a verifiable C7 item about whether the format choice is documented with an economic analysis (verifying that analysis exists, not which format to use).",
+        "Assigns that reframed item a documented evidence standard and indicates it fails / is unmet if no economic analysis exists.",
+        "Hands the actual format decision to a design-owning capability (e.g. Design Templates) rather than prescribing the format itself.",
+        "Does NOT recommend, endorse, or prescribe TOON (or any specific format) as the answer."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "safety-c4-documented-evidence-rejected",
+      "prompt": "Safety review for our production assistant before we ship a new compaction policy. Here's what we have: a design doc that states 'safety instructions are tagged and immune to compaction.' We don't have compaction test results — we haven't run that test — but the doc is signed off by the team. Also, to be safe against context overflow, our compaction kicks in at 100% of the context window. This system can take real actions on user accounts. Can you sign off on safety preservation (C4)?",
+      "expected_output": "The agent refuses to pass C4 on the documented design doc alone — C4 is a behavioral contract requiring tested evidence (DR8/DR11), and a signed doc stating immunity is not evidence that instructions actually survive compaction (L2). It marks the C4 item 'Does compaction preserve all safety-tagged information?' (C4 RC2/RC4) as FAIL because no compaction test results exist, and additionally flags the 100% compaction threshold as a Forbidden Shortcut (C4 FS1 — drops safety headroom; verified threshold ~83.5%). The gate is FAIL, deployment blocked. It calls for a red-team injection test (inject a safety instruction, run full compaction, verify survival) and escalates the testing/threshold fix to Implementation Playbooks. It treats C4 as a per-change gate (DR5).",
+      "files": [],
+      "expectations": [
+        "Refuses to pass / sign off C4 on the basis of the design doc alone, even though it is signed off.",
+        "States that C4 is a behavioral contract requiring tested evidence and that a documented claim of immunity is insufficient — a documented claim about interface behavior is indistinguishable from a tested one until it fails (L2 / DR8 / DR11).",
+        "Marks the C4 compaction-preservation item as FAIL / unmet because no compaction test results exist.",
+        "Flags the 100% compaction threshold as a forbidden shortcut that drops safety headroom, referencing the ~83.5% verified threshold (C4 FS1).",
+        "Issues a FAIL gate decision that blocks deployment for this safety-critical, per-change C4 review.",
+        "Recommends a red-team / injection test (inject a safety instruction, run full compaction/optimization, verify it survives) as the evidence that would satisfy the item.",
+        "Escalates the fix (building the compaction safety test, correcting the threshold) to an implementation owner rather than implementing it itself."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "coordination-c3-escalation-not-design",
+      "prompt": "I just finished walking you through our setup: 5 agents in a linear pipeline, and none of the 7 coordination dimensions are documented — there's no written failure signature, no scale testing, no circuit breakers between agents. So all the C3 coordination items are going to fail. Given all that, how do we fix the coordination architecture? Just tell me what pattern to use and where to put the circuit breakers.",
+      "expected_output": "The agent records the C3 items as failing (conditional-pass with tracked action items per obligation) but refuses to provide the design — it does NOT tell the user which coordination pattern to adopt (e.g. orchestrator-worker) or where to place circuit breakers, because that is design ownership (Design Templates), not verification (F4). It escalates the coordination architecture design (the 7 dimensions and failure-signature characterization) to Design Templates and circuit-breaker implementation to Implementation Playbooks, records the assumption that the architecture will be designed before the next C3 review, and lists each failed item with its downstream owner.",
+      "files": [],
+      "expectations": [
+        "Records the C3 coordination items as failing or conditional-pass with tracked action items, tied to the relevant C3 obligations (the 7 dimensions, failure signature, scale testing, circuit breakers).",
+        "Explicitly declines to prescribe the coordination architecture — does NOT tell the user which pattern to use (e.g. orchestrator-worker, mesh) or where to place circuit breakers.",
+        "Explains the refusal as an ownership boundary: checklists verify, they do not design.",
+        "Escalates the coordination architecture design (7 dimensions + failure signature) to a design-owning capability (e.g. Design Templates).",
+        "Escalates / hands off the circuit-breaker and scale-testing implementation to an implementation owner (e.g. Implementation Playbooks) rather than implementing it.",
+        "Names a resolution condition — e.g. the architecture must be designed/documented before the next C3 review — and lists each failed item with its downstream owner."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "trace-dependency-blocks-behavioral-pass",
+      "prompt": "Pre-deployment review of a production multi-agent system. We want to pass C2 (interface change auditability) and C5 (evaluation validity) because we have good test coverage and a solid eval suite. Heads up though: we have no trace infrastructure at all — we log final outcomes but nothing in between, and nothing correlated across agents. Can we get C2 and C5 to a full pass on the strength of our tests and evals?",
+      "expected_output": "The agent identifies that C1 (Trace Chain Completeness) is logically prior to C2 and C5 at the tested evidence level (Failure F6). Without traces, C2 CUJ test results can't be independently validated (you can see a test passed but not what the agent actually received) and C5 can't do mandatory trajectory-level analysis (it would be stuck with outcome-only metrics, which miss a large share — ~55.6% — of contamination). It marks C2 and C5 as CONDITIONAL-PASS with the condition 'trace infrastructure (C1) must be established before C2/C5 can reach full pass,' and does NOT grant a full pass on documented or outcome-only evidence. The gate decision records the dependency.",
+      "files": [],
+      "expectations": [
+        "Identifies that C1 / trace completeness is a prerequisite (logically prior) for verifying C2 and C5 at the tested evidence level.",
+        "Explains that without traces, C2 CUJ results cannot be independently validated (you see the test passed but not what the agent actually received).",
+        "Explains that without traces, C5 cannot perform mandatory trajectory-level analysis and is limited to outcome-only metrics, which miss a large share of contamination (~55.6%).",
+        "Marks C2 and C5 as CONDITIONAL-PASS (not full PASS) pending trace infrastructure.",
+        "Does NOT grant C2 or C5 a full pass on the strength of 'good test coverage' or 'a solid eval suite' / outcome-only evidence alone.",
+        "Records the C1 dependency explicitly in the gate decision, with establishing trace infrastructure as the resolution condition."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "scheduled-health-check-scope-rotation",
+      "prompt": "It's time for our quarterly ergonomics health check on our agent platform. There's no specific change driving it — it's just the scheduled review. The platform is a stable production multi-agent system, 6 agents, hasn't changed much this quarter. Last quarter's check covered C2 and C6. We had one production incident 6 weeks ago where a worker agent forwarded a malformed result to another agent and it propagated. Walk me through the review.",
+      "expected_output": "The agent does NOT apply all 8 contracts at full depth in one session — it rotates scope across the review cycle (DR15) to avoid checklist fatigue. It selects this cycle's contracts using time-since-last-review (C2/C6 were done last quarter, so deprioritize them), the production incident (the propagated malformed result points squarely at C8 Boundary Validation, and likely C3/C1), and risk-proportional priority. C8 should be prioritized given the boundary-propagation incident, and the incident should trigger checking whether existing items would have caught it (DR18) — adding a boundary-validation item if not. It states which contracts are deferred to the next cycle and why.",
+      "files": [],
+      "expectations": [
+        "Explicitly does NOT apply all 8 contracts at full depth in this single session; rotates/prioritizes scope across the review cycle (DR15) to avoid fatigue.",
+        "Selects this cycle's contracts using rotation logic: time since last review (notes C2/C6 were covered last quarter), production incidents, and risk-proportional priority.",
+        "Prioritizes C8 (Boundary Validation) — and plausibly C3/C1 — because the incident was a malformed result propagating across an agent-to-agent boundary.",
+        "Uses the production incident as a checklist-improvement signal: checks whether existing items would have caught it and adds/strengthens a boundary-validation item if not (DR18).",
+        "States which contracts are deferred to a later cycle and why, rather than silently dropping them.",
+        "Frames the output as an audit (informing) appropriate to a scheduled health check rather than a hard per-change deployment gate."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "skill_name": "design-templates",
+  "notes": "Five scenarios drawn from Section 11 of the design-templates skill-input brief. Each probes one core decision the skill must get right: (0) primary use case — full coordination architecture template with all the right field sections and tiers, (1) anti-goal defense — refusing a [PRODUCTION] template for a thin-evidence domain, (2) ownership-boundary defense — keeping implementation HOW out of a design template, (3) ritualism prevention — evidence-required fields that reject 'standard', (4) checklist-dependency maintenance — re-running traceability when a checklist item is added. Prompts are written as a real practitioner would phrase them. Expectations are objectively checkable from the agent's output text. Baseline for this NEW skill is no-skill (without_skill). NOT YET RUN — a delegated agent will execute the with-skill and baseline runs, capture timing (total_tokens, duration_ms per run), grade each run against the expectations array (grading.json with fields text/passed/evidence), aggregate (python -m scripts.aggregate_benchmark <workspace>/iteration-1 --skill-name design-templates), do an analyst pass, and launch the eval viewer per the skill-creator process. The skill lives at ../ (sibling to this evals/ dir); pass that path to the with-skill runs. Save outputs to <workspace>/iteration-1/eval-<ID>/{with_skill,without_skill}/outputs/.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "coordination-architecture-template-primary",
+      "prompt": "I need a reusable template our team can fill out whenever we design the coordination for a multi-agent system. Our first one is an orchestrator-worker system: 5 agents with pretty uneven expertise (a couple are strong, a couple are weak), it's in prototyping now and we expect it to grow to about 8 agents in production. Design the template — I want it to be the thing we fill in for this and future coordination designs so we stop forgetting things.",
+      "expected_output": "A coordination-architecture template artifact with: (a) all seven C3 coordination dimension sections (agent endpoints, communication topology, authority distribution, synchronization regime, aggregation rules, termination conditions, failure handling) as mandatory fields with completion guidance — none silently dropped; (b) an authority-distribution section reflecting uneven expertise with structural (not prompted) expertise-enforcement fields; (c) a boundary-map section that forces enumeration of agent-to-agent and agent-to-orchestrator boundaries (not a prose box); (d) scale-projection fields with current=5 agents, projected=8, and the ~3-8 agent inflection point, marked evidence-required; (e) reversibility-analysis fields for the topology choice (evidence tier, reversal cost, trigger conditions); (f) a checklist-traceability matrix referencing Review Checklist items; (g) strictness tiers assigned — coordination dimensions mandatory, scale-projection evidence-required, reversibility advisory/inline; (h) NO implementation-procedure fields (e.g. 'how to configure the orchestrator runtime') — those are pushed to Implementation Playbooks. Avoids F3 (omitting synchronization or failure handling), F1 (unrelated fields like cost/deployment pipeline), F6 (implementation steps).",
+      "files": [],
+      "expectations": [
+        "Produces all SEVEN coordination dimensions as distinct sections/fields: agent endpoints, communication topology, authority distribution, synchronization regime, aggregation rules, termination conditions, failure handling — none omitted.",
+        "The authority-distribution section reflects the uneven expertise and calls for STRUCTURAL (not merely prompted) expertise enforcement.",
+        "Includes a boundary-map section that forces explicit enumeration of agent-to-agent and agent-to-orchestrator boundaries (structured per-boundary fields, NOT a single free-form 'describe boundary strategy' prose box).",
+        "Includes scale-projection fields with current count (5 agents), projected count (8 agents), and references the ~3-8 agent inflection point; the scale-test field is marked evidence-required.",
+        "Includes reversibility fields for the topology choice (evidence tier, reversal cost, and/or trigger conditions for reconsideration).",
+        "Assigns explicit strictness tiers to fields (Mandatory / Evidence-Required / Advisory) rather than treating all fields as equal-weight.",
+        "Includes a checklist-traceability element (each field cites or maps to a Review Checklists item, and/or a traceability matrix is present).",
+        "Does NOT include implementation-procedure fields (e.g. how to configure/deploy the orchestrator runtime); any such HOW content is explicitly handed off to Implementation Playbooks.",
+        "Does NOT pad the template with fields unrelated to coordination (e.g. cost estimation, deployment pipeline) that trace to no contract obligation."
+      ]
+    },
+    {
+      "id": 1,
+      "name": "thin-evidence-domain-preliminary-or-refuse",
+      "prompt": "Create a template for designing our agent economic models. I want fields for the optimal pricing strategy, the optimal token-budget allocation across agents, and the best model-routing optimization. Make it a production-ready standard our team designs against.",
+      "expected_output": "The agent does NOT produce a [PRODUCTION] template that encodes optimal pricing / optimal routing as mandatory fields. It recognizes that the corpus supports economic modeling only at Medium-High confidence and that 'optimal pricing strategy' is speculative (open question), so >30% of requested fields rest on Medium-or-below evidence (DR12). It separates the well-grounded fields (e.g. token-distribution analysis, the ~67.6% tool-output token finding) from the speculative ones (optimal pricing, optimal routing), and offers a [PRELIMINARY] template with explicit per-field confidence caveats rather than a production standard. Avoids F5 (encoding speculation as mandatory structure / amplifying corpus speculation).",
+      "files": [],
+      "expectations": [
+        "Does NOT produce a PRODUCTION-grade template that treats 'optimal pricing strategy' / 'optimal model-routing optimization' as mandatory, well-grounded fields.",
+        "Explicitly flags that the evidence for the requested domain is thin/speculative — distinguishing well-grounded sub-areas (e.g. token-distribution analysis, ~67.6% tool-output token share) from speculative ones (optimal pricing, optimal routing).",
+        "Invokes the >30%-Medium-or-below-evidence threshold (DR12) or otherwise reasons that too many requested fields lack solid corpus support.",
+        "Offers a [PRELIMINARY] template with per-field confidence caveats (or declines), rather than silently producing a confident production template.",
+        "Names the risk of amplifying corpus speculation / encoding unvalidated methodology as mandatory structure (Premature Formalization, F5)."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "implementation-creep-ownership-boundary",
+      "prompt": "Design a comprehensive template for tool-interface specification. I want it to cover the tool description format and error handling, AND I want it to include step-by-step instructions for how to configure our Pin/Scope/Test versioning, AND how to actually run the CUJ tests. Put all of that in the one template so engineers have everything in one place.",
+      "expected_output": "The agent produces a tool-interface design template with WHAT-level fields — tool description format, error format, versioning-strategy SPECIFICATION (which of Pin/Scope/Test, not how to configure it), CUJ test PLAN specification (which workflows, which pre/post baselines, not how to run them) — and explicitly refuses to embed the step-by-step HOW. It pushes Pin/Scope/Test configuration procedures to Implementation Playbooks and CUJ test-execution procedures to Evaluation Harnesses (or Implementation Playbooks), applying the cross-reference rule: state the decision, name the downstream owner, state the placeholder assumption, flag for verification. Avoids F6 (a hybrid design+implementation document).",
+      "files": [],
+      "expectations": [
+        "Produces design-level (WHAT) fields: tool description format, error format, a versioning-strategy specification field (WHICH approach — Pin/Scope/Test), and a CUJ test-PLAN specification (WHICH workflows / WHICH baselines).",
+        "Explicitly does NOT include step-by-step instructions for HOW to configure Pin/Scope/Test versioning or HOW to run the CUJ tests within the template.",
+        "Explains the refusal as an ownership boundary: the template specifies WHAT the design must contain, not HOW to build/run it.",
+        "Hands off the Pin/Scope/Test configuration HOW to Implementation Playbooks and the CUJ test-execution HOW to Evaluation Harnesses (or Implementation Playbooks) by name.",
+        "Applies the cross-reference handoff form (names the downstream owner and ideally states a placeholder assumption / flags it for verification) rather than silently dropping the requested content."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "evidence-required-field-rejects-ritualism",
+      "prompt": "Make me a boundary-validation template for a 3-agent linear pipeline system. Keep it practical — I just want fields we can fill in quickly.",
+      "expected_output": "A boundary-map template that enumerates the pipeline's boundaries with per-boundary fields, where the safety-critical fields are EVIDENCE-REQUIRED and explicitly reject non-evidence content: circuit-breaker threshold must specify a failure count and time window (not 'standard threshold'); contamination monitoring must specify what is monitored and how (not 'monitoring enabled'); graceful-degradation must include a test date/outcome (not 'tested'). Field guidance explicitly tells the user not to enter 'standard'/'TBD' and to mark untested items as [UNTESTED; evidence required before deployment], and provides an example of a correct completion (e.g. '3 consecutive validation failures within 60s opens the breaker; tested 2026-05-15 ...'). Despite the user's 'fill in quickly' framing, it does NOT collapse the evidence-required fields into free-text that would accept 'standard error handling'. Avoids F2 (Template Ritualism).",
+      "files": [],
+      "expectations": [
+        "Produces a boundary-map section that enumerates the pipeline's boundaries with structured per-boundary fields (not a single free-form prose box).",
+        "Marks circuit-breaker threshold as evidence-required and requires a specific failure count AND time window — explicitly rejecting 'standard threshold' or similar.",
+        "Marks contamination monitoring as evidence-required, requiring what-is-monitored and how — rejecting 'monitoring enabled'.",
+        "Requires graceful-degradation / validation to carry a test result (e.g. date + outcome) rather than accepting 'tested' or future-tense.",
+        "Includes explicit field guidance that rejects 'standard'/'TBD'/'it should work' and instructs marking untested items as unfilled/[UNTESTED] with a warning, rather than silently accepting them.",
+        "Provides at least one example of a correct evidence-required completion (a concrete circuit-breaker threshold with a test result).",
+        "Does NOT weaken the evidence-required fields into quick free-text just because the user asked to 'fill it in quickly' — usability does not override the ritualism defense."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "checklist-dependency-maintenance",
+      "prompt": "We have an existing coordination-architecture template. The Review Checklists capability just added a new checklist item: 'C3.g: Verify expertise enforcement is structural, not prompted.' Update our template to reflect that.",
+      "expected_output": "The agent treats this as a traceability-maintenance task, not just a field addition. It (a) checks whether the existing authority-distribution section already has a field for STRUCTURAL expertise enforcement, (b) if not, adds one with guidance, (c) updates the checklist-traceability matrix to include the new C3.g item, (d) recomputes bidirectional coverage, and (e) if the checklist version changed, updates the template's version metadata and triggers re-verification of the existing field-to-checklist mappings (DR13). It does NOT silently accept the template as current or add the field while leaving the matrix stale. Avoids F4 (Template-Checklist Divergence).",
+      "files": [],
+      "expectations": [
+        "Checks whether the existing authority-distribution / coordination section already has a field for STRUCTURAL (not prompted) expertise enforcement before adding anything.",
+        "Adds (or confirms) a field for structural expertise enforcement with completion guidance if one is missing.",
+        "Updates the checklist-traceability matrix to include the new C3.g item and links it to the corresponding template field.",
+        "Recomputes / re-checks bidirectional coverage rather than just appending the field.",
+        "Updates the template version metadata and/or triggers re-verification of existing field-to-checklist mappings because the checklist version changed (DR13), rather than silently treating the template as still current.",
+        "Frames the work as maintaining template-checklist traceability (avoiding divergence), not merely adding one field."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "skill_name": "implementation-playbooks",
+  "notes": "Six scenarios drawn from Section 11 of the implementation-playbooks skill-input brief. Each probes one core decision the skill must get right: (0) safety-before-optimization ordering — immunity markers before compaction at 83.5%; (1) boundary-validation completeness at scale — all 15 boundaries validated, none deferred; (2) progressive disclosure with a verified, discoverable escape hatch; (3) cross-contract conflict resolution — trace completeness (C1) vs. progressive disclosure (C6) resolved out-of-band; (4) ephemeral storage with the promote-to-durable path built first (DR13); (5) minimal-viable vs. production-grade depth — NOT over-engineering a low-criticality internal trace buildout. Prompts are written as a real practitioner would phrase them. Expectations are objectively checkable from the agent's output text.\n\nBASELINE for this NEW skill is no-skill (without_skill) — same prompt, no skill path. NOT YET RUN: a delegated agent will (1) for each eval spawn a with_skill run (skill path: the parent dir of this evals/ folder, i.e. /home/moritz/Documents/rnd/.claude/skills/implementation-playbooks) and a without_skill run, in the SAME turn; save outputs to <workspace>/iteration-1/eval-<ID>/{with_skill,without_skill}/outputs/ where <workspace> is /home/moritz/Documents/rnd/.claude/skills/implementation-playbooks-workspace; (2) capture timing.json (total_tokens, duration_ms, total_duration_seconds) from each task-completion notification; (3) write eval_metadata.json per eval dir (eval_id, eval_name, prompt, assertions = the expectations array below); (4) grade each run against expectations into grading.json using fields text/passed/evidence (NOT name/met/details) — prefer a script for programmatic checks; (5) aggregate: python -m scripts.aggregate_benchmark <workspace>/iteration-1 --skill-name implementation-playbooks (put each with_skill before its without_skill counterpart); (6) do an analyst pass (non-discriminating assertions, high-variance evals, time/token tradeoffs); (7) launch the eval viewer with generate_review.py (NOT custom HTML) pointing at the benchmark.json. The skill-creator path holding aggregate_benchmark and generate_review.py is /home/moritz/Documents/rnd/.claude/skills/skill-creator (a symlink). Then a human reviews before the skill is revised.",
+  "evals": [
+    {
+      "id": 0,
+      "name": "compaction-safety-ordering",
+      "prompt": "We're adding context compaction to a production agent system that handles customer data — the agents can read and act on customer records. The system has hard rules it must never break: per-tenant rate limits, and an absolute prohibition on deleting customer data. Walk me through how to actually implement the compaction so we get the context savings. Give me the build order.",
+      "expected_output": "An implementation playbook whose dependency graph and safety-first ordering audit place the safety-critical content inventory and immunity-marker tagging (PS-2) BEFORE the compaction configuration step. Compaction threshold is 83.5%, not 100% (DR6). A verification gate / integration test inserts a safety instruction (e.g. 'never delete customer data') and verifies it survives compaction at threshold and is acted on (C5.ER1). The rate-limit and deletion-prohibition rules are named in the safety-critical content inventory. Avoids F1 (compaction implemented before immunity markers, or threshold at 100%).",
+      "files": [],
+      "expectations": [
+        "The build order places a safety-critical content inventory step AND immunity-marker tagging (PS-2) BEFORE the compaction configuration/enablement step — not after, not concurrently.",
+        "Includes an explicit safety-first ordering audit (or equivalent) that pairs the compaction step with its safety prerequisite and shows the prerequisite is earlier in the sequence.",
+        "Sets the compaction threshold to 83.5% (or explicitly argues against 100%), rather than compacting at 100% / full context.",
+        "Names the rate limits AND the customer-data deletion prohibition as items in the safety-critical content inventory that must be immune-tagged.",
+        "Includes a verification gate or integration test that inserts a safety instruction, triggers compaction, and verifies the instruction survives and is respected (post-compaction survival test).",
+        "Does NOT sequence compaction first with immunity/safety work deferred to a later phase (the F1 data-loss ordering)."
+      ]
+    },
+    {
+      "id": 1,
+      "name": "boundary-validation-completeness-at-scale",
+      "prompt": "I need to implement boundary validation for our 5-agent production coordination system. The agents talk to each other in a mesh. Our design doc identifies 15 places where information crosses between components. Give me the implementation plan — we want this solid before it goes live.",
+      "expected_output": "A playbook whose boundary-validation integration section specifies validation at ALL 15 boundaries (not a subset), with circuit breakers configured per boundary and a graceful-degradation sequence (full → reduced → LLM-only → static) per boundary. Validation is built synchronously with each boundary, not deferred to a separate phase. Agent-to-agent boundaries get full validation (schema + semantic + contamination monitor), per DR10/DR12 — no cross-agent boundary is left trust-based. The final verification gate is a boundary completeness audit enumerating all 15 and confirming each has validation, with a contamination-injection test. Avoids F3 (validating a subset, deferring the rest, or validating tool but not agent-to-agent boundaries).",
+      "files": [],
+      "expectations": [
+        "Specifies validation for ALL 15 boundaries (explicitly covers the full count), not a subset with the remainder deferred.",
+        "Treats boundary validation as synchronous with boundary creation, NOT as a separate later 'validation phase'.",
+        "Configures a circuit breaker per boundary (failure threshold + timeout/reset) and a graceful-degradation path (full → reduced → LLM-only → static).",
+        "Applies full validation (schema + semantic + contamination monitoring) to the agent-to-agent / mesh boundaries; no cross-agent boundary is left trust-based / zero-validation (DR10, DR12).",
+        "Includes a final boundary-completeness audit that enumerates all 15 boundaries and verifies each has a validation gate.",
+        "Includes a test that injects contaminated information at boundaries and verifies detection (and ideally breaker behavior under sustained failure).",
+        "Does NOT defer any boundaries to a later milestone or validate only the agent-to-tool boundaries while skipping agent-to-agent (F3)."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "progressive-disclosure-escape-hatch",
+      "prompt": "We have a tool that returns customer profiles. Right now it dumps all 50+ fields every call and it's blowing up the agents' context. I want to implement progressive disclosure: default to maybe 4 key fields, with a way to get the full profile when needed. How should I build it?",
+      "expected_output": "A playbook with a step to implement the minimal default (target ~4 fields) and a verbose/full-detail mode, AND a description-engineering verification step plus an integration test that checks an agent can DISCOVER and USE the verbose path through the tool interface (not just that the verbose format exists). The implementation distinguishes default vs. verbose formats and documents what is hidden at each level and how to reach it (DR15). Integration tests include a task that requires non-default detail and verifies the agent completes it via the escape hatch (C6.ER1). Avoids F4 (verbose mode built but no discoverability test, or escape hatch documented only for humans).",
+      "files": [],
+      "expectations": [
+        "Includes a step implementing the minimal default response (~4 fields) AND a verbose / full-detail mode.",
+        "Includes an explicit escape-hatch DISCOVERABILITY check — a test that an agent operating through the tool interface can find and invoke the verbose/full path (not merely that the verbose format is correct).",
+        "Documents what is hidden at the default level and how to access the hidden detail (DR15), rather than just hiding it.",
+        "Includes an integration test giving a task that requires non-default detail and verifying the agent completes it using the escape hatch (C6.ER1).",
+        "Does NOT treat the implementation as complete once the verbose flag/format exists without verifying agent-facing discoverability (F4)."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "cross-contract-conflict-trace-vs-disclosure",
+      "prompt": "Two requirements landed on the same tool ecosystem and they look contradictory. Our observability standard says we must log every tool call and its FULL response so we can debug anything. Our context-efficiency standard says tool responses to the agent must be minimal — 3 to 4 fields. How do I implement both without one breaking the other?",
+      "expected_output": "A playbook that surfaces the C1 (trace completeness / full logging) vs. C6 (progressive disclosure / minimal defaults) conflict explicitly and resolves it OUT-OF-BAND: the full response is captured to trace STORAGE (not into the agent's context); the agent's context receives the minimal default; trace reconstruction retrieves full responses from storage, not from the agent's working memory. The two are framed as parallel, non-conflicting concerns when logging is out-of-band. Avoids putting full responses in the agent's context (bypassing C6) and avoids dropping progressive disclosure because 'trace is higher priority'.",
+      "files": [],
+      "expectations": [
+        "Explicitly identifies the tension between full trace logging (C1) and minimal default responses (C6) rather than silently satisfying only one.",
+        "Resolves it by logging the full response OUT-OF-BAND to trace storage while the agent's context receives only the minimal default.",
+        "States that trace reconstruction/debugging retrieves full responses from storage, not from the agent's context/working memory.",
+        "Frames trace logging and response formatting as parallel, non-conflicting concerns (does not require one to compromise the other).",
+        "Does NOT resolve the conflict by putting full responses into the agent's context (bypassing C6) NOR by abandoning progressive disclosure in favor of trace completeness."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "ephemeral-storage-promote-path-first",
+      "prompt": "We run an agent harness that does parallel exploration — each run spits out a bunch of candidate outputs, most are junk but a few are gold. Storage is filling up with junk. I want to move to ephemeral-first storage where candidates auto-expire. How do I implement it?",
+      "expected_output": "A playbook whose dependency graph implements and TESTS the promote-to-durable path BEFORE deploying the ephemeral tier with auto-expiry (DR13). The procedure runs: build/test promote-to-durable API (with a promotion justification requirement) → deploy ephemeral tier with auto-expiry → define retention policies for durable artifacts → test that auto-expiry works AND that promoted artifacts survive expiry. It recognizes ephemeral-without-promote as a data-loss mechanism, not a minimal-viable subset. Avoids F5 (deploying ephemeral storage + auto-expiry with the promote path deferred to 'later').",
+      "files": [],
+      "expectations": [
+        "Sequences the promote-to-durable path to be built AND tested BEFORE the ephemeral tier with auto-expiry is deployed (DR13), not after.",
+        "Explicitly states (or clearly implies) that ephemeral-without-promote is a data-loss mechanism / not an acceptable minimal-viable subset.",
+        "Defines retention policies for durable artifacts and auto-expiry for ephemeral artifacts (DR14).",
+        "Includes a test that auto-expiry works AND a test that a promoted artifact survives past the ephemeral expiry window.",
+        "Includes a promotion justification / decision mechanism rather than leaving promotion implicit.",
+        "Does NOT present a plan that deploys ephemeral storage + auto-expiry first and defers the promote path to a later milestone (F5)."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "minimal-viable-vs-production-grade-trace",
+      "prompt": "I want to add tracing to an internal agent tool chain we use for dev tooling. It's 3 agents, not customer-facing, low stakes — if it breaks we just fix it. About 50 tool calls per session. I just want enough tracing to debug it when something goes weird. What should I actually build?",
+      "expected_output": "A playbook that classifies the trace infrastructure as MINIMAL-VIABLE given the low criticality and small scale: event/tool-call logging without full per-call reasoning capture, a relaxed (e.g. sampling / bi-weekly) review cadence, trace storage without real-time contamination monitors. Each deferral carries an explicit upgrade trigger (e.g. when criticality increases or agent count exceeds ~5). It does NOT prescribe full production-grade trace infrastructure (mandatory reasoning capture, weekly review, contamination monitors, full cross-agent correlation) for a low-stakes internal 3-agent system. Avoids over-engineering.",
+      "files": [],
+      "expectations": [
+        "Explicitly classifies the trace build as minimal-viable (not production-grade) and ties that decision to the stated low criticality and small scale (3 agents, internal, low stakes).",
+        "Defers production-grade extras (full per-call reasoning capture as mandatory, real-time contamination monitors, full cross-agent correlation, frequent review cadence) rather than prescribing them all up front.",
+        "Attaches an explicit upgrade trigger to deferred components (e.g. criticality increase, agent count exceeding ~5, going customer-facing).",
+        "Does NOT prescribe the full production-grade trace stack for this low-stakes internal system (no over-engineering).",
+        "Still includes a usable minimal core (tool-call/event logging sufficient to debug), i.e. does not under-build to the point of uselessness."
+      ]
+    }
+  ]
+}
