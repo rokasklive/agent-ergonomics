@@ -1,4 +1,4 @@
-# Agent Ergonomics — Distilled Skills
+# Agent Ergonomics Skills
 
 > Skill repository for the agent-ergonomics family of Claude Code / OpenCode skills.
 > These skills encode domain expertise for designing, reviewing, evaluating, and building agent-facing systems — tools, MCP servers, APIs, harnesses, and multi-agent workflows — from the perspective of the AI agents that operate them.
