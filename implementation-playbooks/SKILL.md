@@ -1,25 +1,13 @@
 ---
 name: implementation-playbooks
 description: >-
-  Produce a step-by-step implementation playbook — a dependency-ordered, verification-gated build
-  sequence — that takes an agent-facing ergonomic pattern from "we need X" to "X is deployed and
-  verified." Use whenever someone is about to build, implement, deploy, roll out, or sequence the
-  construction of an agent-facing system or pattern and wants the order, prerequisites, safety
-  gates, and integration tests gotten right by default — especially compaction / summarization /
-  model-routing, boundary validation, trace infrastructure, progressive disclosure, ephemeral-first
-  storage, or multi-agent coordination. Triggers: 'how do I implement X', 'what's the build order
-  for Y', 'we're rolling out compaction — what has to come first', 'sequence the work to add
-  boundary validation', 'turn this design / template into an implementation plan', 'a checklist
-  flagged a gap — build the fix', 'plan the deployment of our coordination layer', 'we keep
-  shipping the optimization before the safety net'. This encodes HOW to build and in WHAT ORDER —
-  the procedure, with safety-before-optimization ordering and verification gates at every phase
-  boundary; it does NOT design what the artifact should contain (Design Templates), verify a built
-  system complies (Review Checklists), measure whether it performs well (Evaluation Harnesses), or
-  diagnose a production failure (Debugging Workflows). Prefer it whenever the deliverable is the
-  ordered procedure to build and verify something — not a blank-page design, a go/no-go gate, a
-  metric, or a diagnosis. Even when the user just says "help me add caching/compaction" or "what
-  order should we build this in," reach for this skill — the value is forcing the safety-critical
-  steps and boundary validation ahead of the optimizations that would otherwise ship first.
+  Use when someone needs an ordered implementation or deployment plan for an agent-facing
+  ergonomic pattern, including compaction, summarization, model routing, boundary validation,
+  trace infrastructure, progressive disclosure, ephemeral-first storage, or multi-agent
+  coordination. Triggered by requests for build order, prerequisites, rollout sequencing, safety
+  gates, integration tests, turning a design into a working system, or fixing a gap found by
+  review. Prefer when the deliverable is a dependency-ordered build procedure, not blank-page
+  design, compliance sign-off, performance evaluation, or production-failure diagnosis.
 ---
 
 # Implementation Playbooks

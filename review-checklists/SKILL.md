@@ -1,21 +1,13 @@
 ---
 name: review-checklists
 description: >-
-  Turn agent-ergonomics design contracts into falsifiable, gateable review checklists, then
-  apply them to verify a system complies before it ships. Use whenever someone wants to gate
-  or sign off on a change to an agent-facing system — a pre-deployment review of a tool
-  description / output schema / error format change, a compaction-or-model-routing policy
-  change, a new agent or tool being added, a scheduled ergonomics health check, an onboarding
-  audit of an inherited system, or a red-team exercise. Triggers: 'is this ready to deploy',
-  'review checklist for X', 'verify this change is safe to ship', 'did compaction preserve our
-  safety instructions', 'audit this tool-description change', 'gate this deployment', 'pre-deploy
-  ergonomics check', 'does this system comply with our contracts', 'sign off on the new agent'.
-  This produces a contract-traced PASS / CONDITIONAL-PASS / FAIL gate decision with an evidence
-  standard per item — it VERIFIES compliance; it does not design the system (Design Templates),
-  implement fixes (Implementation Playbooks), measure whether the system performs well
-  (Evaluation Harnesses), or diagnose a detected failure (Debugging Workflows). Prefer it over a
-  broad agent-ergonomics review whenever the deliverable is a go/no-go gate or a verifiable
-  checklist rather than open-ended findings.
+  Use when someone needs a falsifiable, evidence-backed go/no-go review of an agent-facing
+  system before deployment or sign-off, including tool descriptions, output schemas, error
+  formats, compaction or model-routing policies, new agents or tools, ergonomics audits,
+  inherited-system onboarding, or red-team exercises. Triggered by requests to verify readiness,
+  contract compliance, preserved safety instructions, or whether a change is safe to ship.
+  Prefer when the deliverable is a gateable checklist or PASS / CONDITIONAL-PASS / FAIL decision,
+  not blank-page design, implementation, performance evaluation, or failure diagnosis.
 ---
 
 # Review Checklists

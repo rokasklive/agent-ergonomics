@@ -1,23 +1,13 @@
 ---
 name: design-templates
 description: >-
-  Design structured templates for agent-facing system artifacts — coordination architecture,
-  boundary maps, tool-interface specs, progressive-disclosure specs, reversibility analyses,
-  evaluation-system designs — where every field encodes a contract obligation or invariant and
-  forces enumeration of the load-bearing dimensions that ad-hoc design silently omits. Use
-  whenever someone is about to design or document an agent-facing system from a blank page and
-  wants the structure to capture the right dimensions by default, or wants to standardize how a
-  team specs such systems. Triggers: 'design a template for X', 'what should our coordination
-  architecture doc capture', 'we keep forgetting to spec Y', 'standardize how we document tools',
-  'create a boundary-map / reversibility / progressive-disclosure template', 'turn these
-  contracts into a design form', 'a checklist flagged a gap — design the fix'. This DESIGNS the
-  artifact shape (WHAT fields a future design must contain and WHY each one earns its place); it
-  does not verify an existing system complies (Review Checklists), build or configure the thing
-  (Implementation Playbooks), measure whether it performs well (Evaluation Harnesses), or
-  diagnose a failure in production (Debugging Workflows). Prefer it whenever the deliverable is
-  the structure a future design must fill, not a go/no-go gate or a working system. Even when the
-  user just says "help me document our multi-agent setup" or "make a form for tool specs,"
-  reach for this skill — the value is forcing the omitted dimension onto the page.
+  Use when someone needs to design or standardize the structure of an agent-facing system
+  artifact from a blank page, including coordination architectures, boundary maps, tool-interface
+  specs, progressive-disclosure specs, reversibility analyses, or evaluation-system designs.
+  Triggered by requests for templates, forms, documentation structure, required fields, or a
+  design response to a checklist gap. Prefer when the deliverable is an artifact structure that a
+  future design will fill, not compliance review, implementation, performance evaluation, or
+  production-failure diagnosis.
 ---
 
 # Design Templates
