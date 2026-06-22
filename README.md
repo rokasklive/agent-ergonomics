@@ -11,9 +11,9 @@
 - **Implementation Playbooks** (`implementation-playbooks/`)
 - **Review Checklists** (`review-checklists/`)
 
-## Eval Results
+## Evals
 
-Each skill ships its own eval suite under `<skill>/evals/evals.json` — benchmark scenarios with graded assertions comparing with-skill vs. without-skill agent performance.
+Each skill ships its own eval suite under `<skill>/evals/evals.json` — benchmark scenarios.
 
 ## Structure
 
