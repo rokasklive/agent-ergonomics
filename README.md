@@ -3,6 +3,9 @@
 > Skill repository for the agent-ergonomics family of Claude Code / OpenCode skills.
 > These skills encode domain expertise for designing, reviewing, evaluating, and building agent-facing systems — tools, MCP servers, APIs, harnesses, and multi-agent workflows — from the perspective of the AI agents that operate them.
 
+ To install clone and place into .agents/.claude or:
+> `npx skills add rokasklive/agent-ergonomics`
+
 ## Included Skills
 
 - **Agent Ergonomics Inspector** (`agent-ergonomics-inspector/`) — Reviews agent-facing systems for usability friction, ambiguity, hidden state, coordination failures, and token waste.
@@ -11,9 +14,9 @@
 - **Implementation Playbooks** (`implementation-playbooks/`) — Turns agent-ergonomic designs into dependency-ordered build plans with safety gates and verification steps.
 - **Review Checklists** (`review-checklists/`) — Produces evidence-backed go/no-go checklists for agent-facing changes before deployment or sign-off.
 
-## Eval Results
+## Evals
 
-Each skill ships its own eval suite under `<skill>/evals/evals.json` — benchmark scenarios with graded assertions comparing with-skill vs. without-skill agent performance.
+Each skill ships its own eval suite under `<skill>/evals/evals.json` — benchmark scenarios.
 
 ## Structure
 
