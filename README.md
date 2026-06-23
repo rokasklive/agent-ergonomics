@@ -3,8 +3,6 @@
 > Skill repository for the agent-ergonomics family of Claude Code / OpenCode skills.
 > These skills encode domain expertise for designing, reviewing, evaluating, and building agent-facing systems — tools, MCP servers, APIs, harnesses, and multi-agent workflows — from the perspective of the AI agents that operate them.
 
-[![skills.sh](https://skills.sh/b/rokasklive/agent-ergonomics)](https://skills.sh/rokasklive/agent-ergonomics)
-
  To install clone and place into .agents/.claude or:
 > `npx skills add rokasklive/agent-ergonomics`
 
