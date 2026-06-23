@@ -5,11 +5,11 @@
 
 ## Included Skills
 
-- **Agent Ergonomics Inspector** (`agent-ergonomics-inspector/`)
-- **Design Templates** (`design-templates/`)
-- **Evaluation Harness Designer** (`evaluation-harness-designer/`)
-- **Implementation Playbooks** (`implementation-playbooks/`)
-- **Review Checklists** (`review-checklists/`)
+- **Agent Ergonomics Inspector** (`agent-ergonomics-inspector/`) — Reviews agent-facing systems for usability friction, ambiguity, hidden state, coordination failures, and token waste.
+- **Design Templates** (`design-templates/`) — Builds structured templates that force key agent-ergonomics obligations into architecture artifacts.
+- **Evaluation Harness Designer** (`evaluation-harness-designer/`) — Designs and audits agent evaluation methods so metrics measure real purpose, reliability, trajectories, and cost.
+- **Implementation Playbooks** (`implementation-playbooks/`) — Turns agent-ergonomic designs into dependency-ordered build plans with safety gates and verification steps.
+- **Review Checklists** (`review-checklists/`) — Produces evidence-backed go/no-go checklists for agent-facing changes before deployment or sign-off.
 
 ## Eval Results
 
